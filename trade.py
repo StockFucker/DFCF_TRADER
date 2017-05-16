@@ -103,6 +103,7 @@ class DFCF_Trader(object):
             res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
             
             if int(res.json()["Status"]) <> 0:
+                log.info('Login Failed')
                 playsound(mac_say='login failed',win_sound='./wav/login failed.wav',frequency=450, duration=150)
                 continue
  

@@ -215,8 +215,8 @@ def monitor_buy(code,codename):
             Wtbh=''
             for fen_cang in xrange(2,0,-1):
                 print '\n'
-                log.info("Begin Buy -->  %s %s" % (codename,format(float(quotation.result['pre_close'])*(0.965+fen_cang/100.0), '.2f')))
-                Wtbh+= " | " + trader.deal(code,codename,format(float(dfcf_quote['fivequote']['yesClosePrice'])*(0.965+fen_cang/100.0), '.2f'),fen_cang,'B') 
+                log.info("Begin Buy -->  %s %s" % (codename,format(float(quotation.result['pre_close'])*(0.955+fen_cang/100.0), '.2f')))
+                Wtbh+= " | " + trader.deal(code,codename,format(float(dfcf_quote['fivequote']['yesClosePrice'])*(0.955+fen_cang/100.0), '.2f'),fen_cang,'B') 
                 if Wtbh is not None:
                     log.info('Buy Order Accomplished!')
                     playsound(mac_say='transaction completed',win_sound='./wav/transaction completed.wav',frequency=450, duration=150)            
