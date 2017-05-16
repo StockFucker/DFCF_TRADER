@@ -398,7 +398,7 @@ class DFCF_Trader(object):
                                      {'stockCode':stockcode,'zqmc':stockname,'price':price,'tradeType':tradetype});
                 #Kmml=GetKyzjAndKml.json()["Data"]["Kmml"]
                 Kyzj=GetKyzjAndKml.json()["Data"]["Kyzj"]
-                Kmml=str(int(float(Kyzj)/float(price)/100/fen_cang))
+                Kmml=str(int(float(Kyzj)/float(price)/100/fen_cang)*100)
                 #print GetKyzjAndKml.json()
                 if Kmml=='0':
                     print u'可交易数量为0'
