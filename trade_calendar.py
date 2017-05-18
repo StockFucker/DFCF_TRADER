@@ -26,8 +26,8 @@ class TradeCalendar(object):
 
         index=self.df[self.df['calendarDate']==buy_date].index[0]
         i=0
-        while i< int(hold_days-1):
-            index+=1
+        while i< int(abs(hold_days)-1):
+            index += 1 if hold_days > 0 else -1
             if self.df.ix[index,'isOpen'] == 1:
                 i+=1
         #print u"%s买入后, 应该卖出的第%d个交易日为: %s" % (buy_date, hold_days, self.df.ix[index, 'calendarDate'])   
