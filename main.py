@@ -61,8 +61,15 @@ def show_stocklist(): #获取持仓股票的买入日期，持仓数据中不显
         show=[]
         if len(todaydealdata) <> 0 or len(hisdealdata) <> 0:
             dealdata=todaydealdata if len(todaydealdata)!=0 else hisdealdata
-            if dealdata[0]['Zqmc']==stocklist[0]['Zqmc'] and dealdata[0]['Mmlb_bs']=='B':
-                buy_date=dealdata[0]['Cjrq']
+            
+            k=0
+            for j in xrange(len(dealdata)):
+                if dealdata[j]['Zqmc']==stocklist[0]['Zqmc'] and dealdata[j]['Mmlb_bs']=='B':               
+                    k=j
+                    break
+                    
+            if dealdata[k]['Zqmc']==stocklist[0]['Zqmc'] and dealdata[k]['Mmlb_bs']=='B':
+                buy_date=dealdata[k]['Cjrq']
                 buy_date='%s%s%s%s/%s%s/%s%s' % tuple(list(buy_date))
                 buy_date_for_return=buy_date.replace('/','-')
 
@@ -93,10 +100,10 @@ def show_stocklist(): #获取持仓股票的买入日期，持仓数据中不显
                         
                 #print '\n'+' '*13*(k) +'       ---->'
                 #print '买入日: %s   卖出日: %s' % (buy_date, calendar.trade_calendar(buy_date,4))
-                stocklist[0]['sell_day']=calendar.trade_calendar(buy_date,int(strategy.hold_days))
-                stocklist[0]['buy_day']=buy_date_for_return
+                stocklist[i]['sell_day']=calendar.trade_calendar(buy_date,int(strategy.hold_days))
+                stocklist[i]['buy_day']=buy_date_for_return
 
-    return stocklist[0]
+    return stocklist[i]
 
 def show_transaction():
     start_day=time.strftime("%Y",time.localtime())+'-01-01'
