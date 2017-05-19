@@ -368,7 +368,7 @@ def monitor_sell(code,buy_day,sell_day,stock_amount):
             sys.stdout.write("\r")
             sys.stdout.flush()
             log.info('Sell Begin...')
-            Wtbh=trader.deal(code,dfcf_quote['name'],str(float(dfcf_quote['bottomprice'])+0.01),'S')
+            Wtbh=trader.deal(code,dfcf_quote['name'],str(float(dfcf_quote['bottomprice'])+0.01),1,'S')
             if Wtbh is not None:
                 log.info('Sell End...')
                 #os.system("say order completed")
