@@ -396,10 +396,11 @@ class DFCF_Trader(object):
         while True:
             try:
                 GetKyzjAndKml=self.s.post('https://jy.xzsec.com/Trade/GetKyzjAndKml'+self.url_suffix, \
-                                     {'stockCode':stockcode,'zqmc':stockname,'price':price,'tradeType':tradetype});
-                #Kmml=GetKyzjAndKml.json()["Data"]["Kmml"]
-                Kyzj=GetKyzjAndKml.json()["Data"]["Kyzj"]
-                Kmml=str(int(float(Kyzj)/float(price)/100/fen_cang)*100)
+                                     {'stockCode':stockcode,'stockName':stockname,'price':price,'tradeType':tradetype});
+                Kmml=str(int(GetKyzjAndKml.json()["Data"]["Kmml"])/100/fen_cang*100)
+                #Kyzj=GetKyzjAndKml.json()["Data"]["Kyzj"]
+                #Kmml=str(int(float(Kyzj)/float(price)/100/fen_cang)*100)
+                
                 #print GetKyzjAndKml.json()
                 if Kmml=='0':
                     print u'可交易数量为0'
