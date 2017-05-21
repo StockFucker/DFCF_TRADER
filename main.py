@@ -141,7 +141,7 @@ def none_trade_day():
                  result["data"][0]["code"], calendar.trade_calendar(result["stockDate"].replace("-","/"),2)))
         else:
             show = u"\r策略选股: None"
-    else: show = u"\rLogin-Thread Alive: %s" % (trader.thread_1.isAlive(),)
+    else: show = u"\rLogin-Thread Alive: %s" % (trader.thread_login.isAlive(),)
         #df=pd.DataFrame(trader.login_message['Data'])
         #df=df.ix[:,[0,5,1,6]]
         #df.columns = ['Date', 'Time','Account','Name']
