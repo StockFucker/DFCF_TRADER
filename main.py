@@ -217,8 +217,10 @@ def monitor_buy(code,codename):
                     time.sleep(2)
             quotation.show=0
             print '\n'
-            log.info("Begin Buy -->  %s" % codename)
+            log.info("Begin Buy -->  %s %s" % (codename,str(float(dfcf_quote['topprice'])-0.01)))
             #Wtbh=trader.deal(code,codename,str(float(dfcf_quote['topprice'])-0.01),'B') 
+            
+            '''
             Wtbh=''
             for fen_cang in xrange(2,0,-1):
                 print '\n'
@@ -237,29 +239,32 @@ def monitor_buy(code,codename):
                     return 'buy order failed!'
             return Wtbh
             '''
-            if Wtbh is not None:
+            Wtbh_01 = None
+            Wtbh_01=trader.deal(code,codename,str(float(dfcf_quote['topprice'])-0.01),2,'B')
+            if Wtbh_01 is not None:
                 log.info('Buy Order Accomplished!')
-                #os.system("say order completed")
-                #winsound.PlaySound('./wav/transaction completed.wav',winsound.SND_ASYNC)
                 playsound(mac_say='transaction completed',win_sound='./wav/transaction completed.wav',frequency=450, duration=150)
                 #查询当日委托状态， 如果未成则等待
                 while trader.getordersdata()[0]['Wtzt'] <> '已成':
-                    sys.stdout.write("\r委托编号:[%s] 还未成交!" % Wtbh)
+                    sys.stdout.write("\r委托编号:[%s] 还未成交!" % Wtbh_01)
                     sys.stdout.flush()
                     time.sleep(5)
                 log.info('Deal Done!')
                 #return Wtbh             
                 #按照涨停价-0.01挂单，如果成交价格为开盘价， 则还有10%的资金未利用        
+
+                while time.localtime()[3:6]<(9,45):
+                    time.sleep(1)
                 Wtbh_02 = None
                 if round(float(quotation.result['pre_close'])*0.96,2)>=float(dfcf_quote['bottomprice']):
-                    log.info("Begin Buy -->  %s %s" % (codename,format(float(quotation.result['pre_close'])*0.96, '.2f')))
-                    Wtbh_02=trader.deal(code,codename,format(float(quotation.result['pre_close'])*0.96, '.2f'),'B')                
+                    log.info("Begin Buy -->  %s %s" % (codename,format(float(quotation.result['pre_close'])*0.965, '.2f')))
+                    Wtbh_02=trader.deal(code,codename,format(float(quotation.result['pre_close'])*0.965, '.2f'),1,'B')                
                     log.info('Deal Done!')
                 #--------------------------------------------------------------------------    
-                return Wtbh + " | " + Wtbh_02 if Wtbh_02 is not None else Wtbh
+                return Wtbh_01 + " | " + Wtbh_02 if Wtbh_02 is not None else Wtbh_01
             else:
                 return 'buy order failed!'
-            '''
+            
         '''
         if quotation.result['code']==code \
            and float(quotation.result['realtimequote']['currentPrice'])>10.80 \
