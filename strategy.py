@@ -64,7 +64,14 @@ class Strategy(object):
                 r=self.s.post(self.config["STRATEGY_URL"],data=traceback_params,timeout=10,proxies=self.proxie)
             except Exception as e:
                 print e;time.sleep(2)
-            else:       
+            else:
+                try:
+                    r.json()['success']
+                except ValueError as e:
+                    print '<traceback>',e
+                    time.sleep(2)
+                    continue
+                
                 if r.json()['success']==False:
                     print "<traceback>: %s" % r.json()['data']['crmMessage']
                     #print u"抱歉，服务器繁忙，请稍后再试！"
