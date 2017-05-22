@@ -397,7 +397,7 @@ class DFCF_Trader(object):
             try:
                 GetKyzjAndKml=self.s.post('https://jy.xzsec.com/Trade/GetKyzjAndKml'+self.url_suffix, \
                                      {'stockCode':stockcode,'stockName':stockname,'price':price,'tradeType':tradetype});
-                Kmml=str(int(GetKyzjAndKml.json()["Data"]["Kmml"]/100/fen_cang)*100)
+                Kmml=str(int(int(GetKyzjAndKml.json()["Data"]["Kmml"])/100/fen_cang)*100)
                 #Kyzj=GetKyzjAndKml.json()["Data"]["Kyzj"]
                 #Kmml=str(int(float(Kyzj)/float(price)/100/fen_cang)*100)
                 log.info('Kmml: %s' % Kmml)
