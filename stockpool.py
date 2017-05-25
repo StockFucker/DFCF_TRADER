@@ -54,9 +54,9 @@ class StockPool(object):
             return False  
     
     #判断是否涨停    
-    def is_top_price(self,stockID,before=1):
-        df=ts.get_k_data(stockID)[::-1]
-        if len(df)>15 and df.iloc[0].date == end_day:
+    def is_top_price(self,df,before=1):
+
+        if len(df)>=10 and df.iloc[0].date == end_day:
             if round(df.iloc[before-1].close,2) == round(round(df.iloc[before].close,2)*1.1, 2):
                 buy_value = self.get_buy_value(df,before)
                 return True,buy_value
@@ -66,9 +66,9 @@ class StockPool(object):
             return False
     
     #获取均线数值    
-    def get_ma(self,stockID,ma=5):
+    def get_ma(self,df,ma=5):
         sum=0
-        df=ts.get_k_data(stockID)[::-1]
+
         if df.empty:
             return 0
         elif len(df)<ma:
@@ -100,12 +100,13 @@ if __name__=="__main__":
         for EachStockID in info.code: # info.index:  
              print i,EachStockID;i+=1
              #if test.is_break_high(EachStockID,-10):
-             result= test.is_top_price(EachStockID,2)
+             df=ts.get_k_data(EachStockID,start=start_day,end=end_day)[::-1]
+             result= test.is_top_price(df,2)
              if result:
                  print "High price on",
                  print EachStockID,  
                  print info[info.code==EachStockID].name.values[0]  #info.ix[EachStockID]['name'].decode('utf-8')  
-                 stocks[EachStockID] = info[info.code==EachStockID].name.values[0],test.get_ma(EachStockID),result[1] #info.ix[EachStockID]['name'].decode('utf-8')
+                 stocks[EachStockID] = info[info.code==EachStockID].name.values[0],test.get_ma(df),result[1] #info.ix[EachStockID]['name'].decode('utf-8')
     loop_all_stocks() 
     
     for _ in stocks:
