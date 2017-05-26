@@ -101,13 +101,50 @@ if __name__=="__main__":
              print i,EachStockID;i+=1
              #if test.is_break_high(EachStockID,-10):
              df=ts.get_k_data(EachStockID,start=start_day,end=end_day)[::-1]
-             result= test.is_top_price(df,2)
+             result= test.is_top_price(df,1)
              if result:
                  print "High price on",
                  print EachStockID,  
                  print info[info.code==EachStockID].name.values[0]  #info.ix[EachStockID]['name'].decode('utf-8')  
                  stocks[EachStockID] = info[info.code==EachStockID].name.values[0],test.get_ma(df),result[1] #info.ix[EachStockID]['name'].decode('utf-8')
-    loop_all_stocks() 
+    #loop_all_stocks() 
+ 
+    def loop_all_stocks_1():
+        global stock_queue
+        while 1: # info.index: 
+             if stock_queue.empty(): 
+                 print 'empty'
+                 break
+             EachStockID=stock_queue.get()
+             print stock_queue.qsize(), EachStockID
+             #if test.is_break_high(EachStockID,-10):
+             df=ts.get_k_data(EachStockID,start=start_day,end=end_day)[::-1]
+             result= test.is_top_price(df,1)
+             if result:
+                 print "High price on",
+                 print EachStockID,  
+                 print info[info.code==EachStockID].name.values[0]  #info.ix[EachStockID]['name'].decode('utf-8')  
+                 stocks[EachStockID] = info[info.code==EachStockID].name.values[0],test.get_ma(df),result[1] #info.ix[EachStockID]['name'].decode('utf-8')
+    
+    import threading, Queue
+    stock_queue=Queue.Queue(maxsize=len(info))
+    for _ in info.code:
+        stock_queue.put(_)
+    
+    threads = []
+    for i in xrange(10):
+        thread_queue = threading.Thread(target=loop_all_stocks_1,name='Thread-queue-'+str(i))
+        thread_queue.setDaemon(True)
+        #thread_queue.start()
+        threads.append(thread_queue)
+        
+
+    
+    for t in threads:
+        t.start()        
+    for t in threads:
+        t.join()
+
     
     for _ in stocks:
         print _,stocks[_]
