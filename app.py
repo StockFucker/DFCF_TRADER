@@ -12,6 +12,13 @@ from flask import *
 app = Flask(__name__)
 trader=DFCF_Trader()
 
+@app.route("/login")
+def relogin():
+    global trader
+    trader=DFCF_Trader()
+    login()
+
+
 @app.route("/buy")
 def buy():
     stockcode = request.args.get('stockcode', '')
