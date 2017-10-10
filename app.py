@@ -27,7 +27,6 @@ def buy():
     price = request.args.get('price', '')
     tradetype = "B"
     trader.deal(stockcode,stockname,price,1.0,tradetype)
-    return ""
 
 def login():
     stdi, stdo, stde = sys.stdin, sys.stdout, sys.stderr  # 获取标准输入、标准输出和标准错误输出
