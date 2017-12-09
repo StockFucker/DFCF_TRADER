@@ -5,6 +5,7 @@ import sys
 import os  
 import pandas as pd
 import time
+import json
 
 from trade import *
 from flask import *
@@ -19,14 +20,32 @@ def relogin():
     login()
     return ""
 
-
 @app.route("/buy")
 def buy():
     stockcode = request.args.get('stockcode', '')
     stockname = ''
     price = request.args.get('price', '')
+    amount = request.args.get('amount', '')
     tradetype = "B"
-    trader.deal(stockcode,stockname,price,1.0,tradetype)
+    trader.deal_with(stockcode,stockname,price,amount,tradetype)
+
+@app.route("/sell")
+def sell():
+    stockcode = request.args.get('stockcode', '')
+    stockname = ''
+    price = request.args.get('price', '')
+    amount = request.args.get('amount', '')
+    tradetype = "S"
+    trader.deal_with(stockcode,stockname,price,amount,tradetype)
+
+@app.route("/asset")
+def asset():
+    return trader.getassets()["Kyzj"]
+
+@app.route("/holdings")
+def holdings():
+    return json.dumps(trader.getstocklist())
+
 
 def login():
     stdi, stdo, stde = sys.stdin, sys.stdout, sys.stderr  # 获取标准输入、标准输出和标准错误输出
@@ -34,7 +53,6 @@ def login():
     sys.stdin, sys.stdout, sys.stderr = stdi, stdo, stde  # 保持标准输入、标准输出和标准错误输出
     sys.setdefaultencoding('utf8')
 
-    
     while True:
         if trader.login_flag==True:
             print "\nActive Threads: [%02d] \n" % threading.active_count()

@@ -443,6 +443,36 @@ class DFCF_Trader(object):
                     print e,'unknow error!'
                     time.sleep(2)
                 
+
+    #下单
+    def deal_with(self,stockcode,stockname,price,amount,tradetype):
+        try:
+            SubmitTrade=self.s.post('https://jy.xzsec.com/Trade/SubmitTrade'+self.url_suffix, \
+                               {'stockCode':stockcode,'price':price, \
+                               'amount':amount, \
+                               'tradeType':tradetype} #,'stockName':stockname
+                               )       
+        except Exception as e:
+            print e,"\n<SubmitTrade> Connection Lost, Re-Connecting..."
+            time.sleep(1)
+        else:
+            try:
+                #print GetKyzjAndKml.json()
+                #print SubmitTrade.json()    
+                Wtbh=SubmitTrade.json()["Data"][0]["Wtbh"]
+                return Wtbh
+            except ValueError: 
+                self.login_flag=False
+                while self.login_flag is False:
+                    time.sleep(.5)
+                continue
+            except (IndexError,TypeError):
+                log.error(SubmitTrade.json()["Message"]) #Status:-1
+                break               
+            except Exception as e:
+                print e,'unknow error!'
+                time.sleep(2)
+
 #获取实时行情
     def getquote(self,stockcode):
         params={
