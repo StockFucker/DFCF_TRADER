@@ -465,10 +465,8 @@ class DFCF_Trader(object):
                 self.login_flag=False
                 while self.login_flag is False:
                     time.sleep(.5)
-                continue
             except (IndexError,TypeError):
                 log.error(SubmitTrade.json()["Message"]) #Status:-1
-                break               
             except Exception as e:
                 print e,'unknow error!'
                 time.sleep(2)
