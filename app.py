@@ -27,7 +27,10 @@ def buy():
     price = request.args.get('price', '')
     amount = request.args.get('amount', '')
     tradetype = "B"
-    trader.deal_with(stockcode,stockname,price,amount,tradetype)
+    if amount is None:
+        trader.deal(stockcode,stockname,price,1.0,tradetype)
+    else:
+        trader.deal_with(stockcode,stockname,price,amount,tradetype)
 
 @app.route("/sell")
 def sell():
