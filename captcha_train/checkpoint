@@ -1,0 +1,6 @@
+model_checkpoint_path: "captcha-14000"
+all_model_checkpoint_paths: "captcha-13600"
+all_model_checkpoint_paths: "captcha-13700"
+all_model_checkpoint_paths: "captcha-13800"
+all_model_checkpoint_paths: "captcha-13900"
+all_model_checkpoint_paths: "captcha-14000"
