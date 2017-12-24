@@ -14,7 +14,9 @@ except ImportError:
 import cStringIO,  requests, random , string
 import matplotlib.pyplot as plt
 import sys
-url_yzm="https://jy.xzsec.com/Login/YZM?randNum=0.5609794557094574"
+import urllib, urllib2, sys
+import base64
+import json
 
 class VerifyCode(object):
     def __init__(self):
@@ -24,7 +26,9 @@ class VerifyCode(object):
         #url ="http://www.qqct.com.cn/console/captcha"
 
         img = Image.open(cStringIO.StringIO(self.s.get(url_yzm).content))
-     
+        buffer = cStringIO.StringIO()
+        img.save(buffer, format="JPEG")
+        img_str = base64.b64encode(buffer.getvalue())
         '''
         im_1=img.crop((10,0,85,35)) #crop() : 从图像中提取出某个矩形大小的图像。它接收一个四元素的元组作为参数，
                             #各元素为（left, upper, right, lower），坐标系统的原点（0, 0）是左上角。
@@ -41,49 +45,38 @@ class VerifyCode(object):
         #print im.format, im.size, im.mode
         #im.show()
         '''
-        
-        #vcode = pytesseract.image_to_string(image=img, lang="eng", config="-psm 7")
-        vcode = pytesseract.image_to_string(image=img, lang="eng", config="-psm 7 digits")
-      
-        #对于识别成字母的 采用该表进行修正  
-        '''
-        rep={'O':'0',  
-            'I':'1','L':'1',  
-            'Z':'2',  
-            'S':'8',
-            ' ':''
-            };  
-        for r in rep:  
-            vcode = vcode.replace(r,rep[r]) 
-        '''
-        return vcode,img
+
+        host = 'http://jisuyzmsb.market.alicloudapi.com'
+        path = '/captcha/recognize'
+        method = 'POST'
+        appcode = '6349909e80664219a6b6a3d580c05687'
+        querys = 'type=n4'
+        bodys = {}
+        url = host + path + '?' + querys
+
+        bodys['pic'] = img_str
+        post_data = urllib.urlencode(bodys)
+        request = urllib2.Request(url, post_data)
+        request.add_header('Authorization', 'APPCODE ' + appcode)
+        # //根据API的要求，定义相对应的Content-Type
+        request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+        response = urllib2.urlopen(request)
+        content = json.loads(response.read())
+        vcode = content["result"]["code"]
+        return vcode
+
+# def download_images():
+#     randNum="%.16f" % float(random.random())
+#     url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
+#     test = VerifyCode()
+#     for i in range(0,100):
+#     image = Image.open(cStringIO.StringIO(self.s.get(url_yzm).content))
+#     image.write(label, os.path.join(gen_dir, label+'_num'+str(i)+'.png'))
+
 
 if __name__=="__main__":
     randNum="%.16f" % float(random.random())
     url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
-    
     test=VerifyCode()
-    i=0;vcode="";digits=list(string.digits)
-    while len(vcode)<>100 and i<1000:
-        vcode,im=test.get_verify_code(url_yzm)     
-        if len(vcode)==4:
-           
-            for k in xrange(4):
-                if vcode[k] not in digits: #[str(x) for x in xrange(10)]:
-                    break
-            else:
-                plt.figure("verify code")
-                plt.imshow(im)
-                plt.show()
-                print  "\rCode:[%4s]    Length:%2d" % (vcode, len(vcode))
-            '''
-            try:
-                int(vcode)
-                break
-            except Exception: 
-                continue
-            '''
-        sys.stdout.write( "\rCode:[%8s]    Length:%2d   Count: %d" % (vcode, len(vcode),i))
-        sys.stdout.flush()
-        i+=1
-    print '\nDone'
+    vcode = test.get_verify_code(url_yzm)
+    print vcode

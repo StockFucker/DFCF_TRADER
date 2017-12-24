@@ -20,40 +20,26 @@ class DFCF_Trader(object):
     def __init__(self):
         self.s = requests.session()
         self.verify_code=VerifyCode()
-        self.queue=Queue.Queue(maxsize=15)
+        # self.queue=Queue.Queue(maxsize=15)
         
         self.tradetime_flag=False
         self.login_flag=False
-        self.kill=0
+        self.login()
+        # self.kill=0
 
-        for i in xrange(5):
-            thread_queue = threading.Thread(target=self.generate_vcode_queue,name='Thread-queue-'+str(i))
-            thread_queue.setDaemon(True)
-            thread_queue.start()
-        self.thread_login=threading.Thread(target=self.login,name='Thread-login')
-        self.thread_login.setDaemon(True)
-        self.thread_login.start()
+        # for i in xrange(5):
+        #     thread_queue = threading.Thread(target=self.generate_vcode_queue,name='Thread-queue-'+str(i))
+        #     thread_queue.setDaemon(True)
+        #     thread_queue.start()
+        # self.thread_login=threading.Thread(target=self.login,name='Thread-login')
+        # self.thread_login.setDaemon(True)
+        # self.thread_login.start()
  
 
 #登陆
     def login(self):
         #log.info('%s Active...' % threading.current_thread().name)
-        while True:
-            if self.kill==1:
-                break
-            if not self.login_flag:
-                #print  '[%s] : %s' % (time.strftime('%H:%M:%S') ,'Logging...')
-                log.info('Logging ...')
-                for i in xrange(2):
-                    self.thread_auth = threading.Thread(target=self.__authorization,name='Thread-auth-'+str(i))                   
-                    self.thread_auth.setDaemon(True)
-                    self.thread_auth.start()
-                while self.login_flag==False:
-                    time.sleep(.5)
-                print  '[%s] : %s' % (time.strftime('%H:%M:%S') ,'Login Success!')
-                playsound(mac_say='login success',win_sound='./wav/login success.wav',frequency=450, duration=150)
-
-            time.sleep(.5)
+        self.__authorization()
             
     def __authorization(self):
         while self.login_flag==False:
@@ -70,35 +56,9 @@ class DFCF_Trader(object):
             login_params=json.load(file("./config/dfcf.json"))
     
             #获取验证码：
-            try:
-                randNum,vcode=self.queue.get(block=False)
-                print "use queue: %d, vcode: %s, randNum: %s" % (self.queue.qsize(),vcode,randNum)
-            except:
-                randNum="%.16f" % float(random.random())
-                url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
-                #img = Image.open(cStringIO.StringIO(self.s.get(url_yzm).content))
-                #img.show()
-                #vcode=raw_input('Enter:')
-                vcode=""; digits=list(string.digits); i=0
-                while True:
-                    if self.login_flag==True: return
-                    vcode,im=self.verify_code.get_verify_code(url_yzm)
-                    if len(vcode) == 4:                        
-                        for k in xrange(4):
-                            if vcode[k] not in digits: #[str(x) for x in xrange(10)]:
-                                break
-                        else:
-                            #plt.figure("verify code")
-                            #plt.imshow(im)
-                            #plt.show()
-                            print  "\rCode:[%4s]    Retry Times:%2d" % (vcode, i)
-                            break
-                    sys.stdout.write(u"\r验证码识别:%s " % (vcode))
-                    sys.stdout.flush()
-                    i+=1
-            
-            if self.login_flag==True: return
-
+            randNum="%.16f" % float(random.random())
+            url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
+            vcode=self.verify_code.get_verify_code(url_yzm)
             login_params.update({'identifyCode':vcode,'randNumber':randNum})            
             res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
             
@@ -170,32 +130,9 @@ class DFCF_Trader(object):
         login_params=json.load(file("./config/dfcf.json"))
 
         #获取验证码：
-        try:
-            randNum,vcode=self.queue.get(block=False)
-            print "use queue: %d, vcode: %s, randNum: %s" % (self.queue.qsize(),vcode,randNum)
-        except:
-            randNum="%.16f" % float(random.random())
-            url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
-            #img = Image.open(cStringIO.StringIO(self.s.get(url_yzm).content))
-            #img.show()
-            #vcode=raw_input('Enter:')
-            vcode=""; digits=list(string.digits); i=0
-            while True:
-                vcode,im=self.verify_code.get_verify_code(url_yzm)
-                if len(vcode) == 4:                        
-                    for k in xrange(4):
-                        if vcode[k] not in digits: #[str(x) for x in xrange(10)]:
-                            break
-                    else:
-                        #plt.figure("verify code")
-                        #plt.imshow(im)
-                        #plt.show()
-                        print  "\rCode:[%4s]    Retry Times:%2d" % (vcode, i)
-                        break
-                sys.stdout.write(u"\r验证码识别:%s " % (vcode))
-                sys.stdout.flush()
-                i+=1
-
+        randNum="%.16f" % float(random.random())
+        url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
+        vcode=self.verify_code.get_verify_code(url_yzm)
         login_params.update({'identifyCode':vcode,'randNumber':randNum})            
         res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
         
@@ -222,25 +159,25 @@ class DFCF_Trader(object):
         '''        
         
 
-#生成验证码队列
-    def generate_vcode_queue(self):
-        while True:
-            if self.kill==1:
-                break
-            randNum="%.16f" % float(random.random())
-            url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
-            vcode=""; digits=list(string.digits)
-            while True:
-                vcode,im=self.verify_code.get_verify_code(url_yzm)
-                if len(vcode) == 4:                        
-                    for k in xrange(4):
-                        if vcode[k] not in digits: #[str(x) for x in xrange(10)]:
-                            break
-                    else:
-                        #print  "qsize: %2d" % self.queue.qsize()
-                        break
-            self.queue.put([randNum, vcode],block=True)
-            #time.sleep(.5)
+# #生成验证码队列
+#     def generate_vcode_queue(self):
+#         while True:
+#             if self.kill==1:
+#                 break
+#             randNum="%.16f" % float(random.random())
+#             url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
+#             vcode=""; digits=list(string.digits)
+#             while True:
+#                 vcode,im=self.verify_code.get_verify_code(url_yzm)
+#                 if len(vcode) == 4:                        
+#                     for k in xrange(4):
+#                         if vcode[k] not in digits: #[str(x) for x in xrange(10)]:
+#                             break
+#                     else:
+#                         #print  "qsize: %2d" % self.queue.qsize()
+#                         break
+#             self.queue.put([randNum, vcode],block=True)
+#             #time.sleep(.5)
 
         
 #资产列表
