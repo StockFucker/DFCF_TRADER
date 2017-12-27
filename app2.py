@@ -11,7 +11,7 @@ from trade import *
 from flask import *
 
 app = Flask(__name__)
-trader=DFCF_Trader(config="./config/dfcf.json2")
+trader=DFCF_Trader(config="./config/dfcf2.json")
 
 @app.route("/login")
 def relogin():
