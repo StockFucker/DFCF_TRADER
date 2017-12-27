@@ -5,6 +5,7 @@
 import json
 
 import urllib
+import time
 
 def go():
     LOGIN_URL = "http://localhost:5000/asset"
@@ -14,5 +15,5 @@ def go():
 
 if __name__ == '__main__':
     while True:
-        sleep(60)
+        time.sleep(60)
         go()
