@@ -4,14 +4,17 @@
 
 import json
 
-import request
+import urllib
 
+
+BEGIN_TIME = '09:30:00'
+ml = ML()
 
 def go():
     LOGIN_URL = "http://localhost:5000/asset"
-    data= request.urlopen(LOGIN_URL).read()
+    data=urllib.request.urlopen(LOGIN_URL).read()
     LOGIN_URL = "http://localhost:7000/asset"
-    data= request.urlopen(LOGIN_URL).read()
+    data=urllib.request.urlopen(LOGIN_URL).read()
 
 if __name__ == '__main__':
     while True:
