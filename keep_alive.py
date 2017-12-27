@@ -6,10 +6,6 @@ import json
 
 import urllib
 
-
-BEGIN_TIME = '09:30:00'
-ml = ML()
-
 def go():
     LOGIN_URL = "http://localhost:5000/asset"
     data=urllib.request.urlopen(LOGIN_URL).read()
