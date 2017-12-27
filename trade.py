@@ -37,11 +37,11 @@ class DFCF_Trader(object):
  
 
 #登陆
-    def login(self):
+    def login(self,config="./config/dfcf.json"):
         #log.info('%s Active...' % threading.current_thread().name)
-        self.__authorization()
+        self.__authorization(config)
             
-    def __authorization(self):
+    def __authorization(self,config="./config/dfcf.json"):
         while self.login_flag==False:
             headers = {'Host': 'jy.xzsec.com',
                        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:50.0) Gecko/20100101 Firefox/50.0',
@@ -53,7 +53,7 @@ class DFCF_Trader(object):
                        'Upgrade-Insecure-Requests':'1'         
                        } 
             self.s.headers.update(headers)
-            login_params=json.load(file("./config/dfcf.json"))
+            login_params=json.load(file(config))
     
             #获取验证码：
             randNum="%.16f" % float(random.random())
@@ -85,7 +85,7 @@ class DFCF_Trader(object):
 
 
 #登陆
-    def login_a(self):
+    def login_a(self,config="./config/dfcf.json"):
         #log.info('%s Active...' % threading.current_thread().name)
         while True:
             if self.kill==1:
@@ -94,7 +94,7 @@ class DFCF_Trader(object):
                 #print  '[%s] : %s' % (time.strftime('%H:%M:%S') ,'Logging...')
                 log.info('Logging ...')
                 try:
-                    self.__authorization()
+                    self.__authorization(config)
                     #print  '[%s] : %s' % (time.strftime('%H:%M:%S') ,'Login Success!')
                     if self.login_flag==True:
                         log.info('Login Success')
@@ -116,7 +116,7 @@ class DFCF_Trader(object):
                     log.info("Login connection lost !!!")
             time.sleep(.5)
             
-    def __authorization_a(self):
+    def __authorization_a(self,config="./config/dfcf.json"):
         headers = {'Host': 'jy.xzsec.com',
                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:50.0) Gecko/20100101 Firefox/50.0',
                    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -127,7 +127,7 @@ class DFCF_Trader(object):
                    'Upgrade-Insecure-Requests':'1'         
                    } 
         self.s.headers.update(headers)
-        login_params=json.load(file("./config/dfcf.json"))
+        login_params=json.load(file(config))
 
         #获取验证码：
         randNum="%.16f" % float(random.random())
