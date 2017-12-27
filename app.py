@@ -81,9 +81,7 @@ def login():
         time.sleep(1)
 
 
-
 if __name__ == '__main__':
     login()
     app.run()
-
     

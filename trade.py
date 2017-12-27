@@ -14,7 +14,7 @@ from voice import playsound
 import random,string
 from PIL import Image
 import cStringIO
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 class DFCF_Trader(object):
     def __init__(self,config="./config/dfcf.json"):
@@ -182,9 +182,34 @@ class DFCF_Trader(object):
         
 #资产列表
     def getassets(self):
-        Assets=self.s.post('https://jy.xzsec.com/Com/GetAssets'+self.url_suffix,
+        while True:
+            try:
+                Assets=self.s.post('https://jy.xzsec.com/Com/GetAssets'+self.url_suffix,
                                    {'moneyType':'RMB'},timeout=5)
-        return Assets.json()["Data"][0]                    
+            except Exception:
+                print "\n<getassets> Connection Lost, Re-Connecting..."
+                time.sleep(.1)
+            else:
+                try:
+                    return Assets.json()["Data"][0]                    
+                except ValueError:
+                    self.login_flag=False
+                    while self.login_flag is False:
+                        time.sleep(.5)
+                except TypeError: #Status:-1; Message:'服务器异常'
+                    print u"\n <getassets> 服务器异常!"
+                    time.sleep(2)
+                except Exception as e:
+                    log.error(e)
+                    time.sleep(2)
+                    
+                '''                
+                if Assets.json()["Status"]!=0: #Status:-2 ; Message:"会话已超时，请重新登录!"
+                    self.login_flag=False
+                    time.sleep(2)
+                    continue
+                return Assets.json()["Data"][0]
+                '''
 
 #持仓列表
     def getstocklist(self):
@@ -194,7 +219,7 @@ class DFCF_Trader(object):
                                       {'qqhs':'1000','dwc':''});
             except Exception:
                 print "\n <getstocklist> connection lost!"
-                time.sleep(.1)
+                time.sleep(1)
             else:
                 try:
                     return StockList.json()["Data"]                    
@@ -223,7 +248,7 @@ class DFCF_Trader(object):
                 OrdersData=self.s.post('https://jy.xzsec.com/Search/GetOrdersData'+self.url_suffix,{'qqhs':'20','dwc':''});
             except Exception:
                 print "\n <getordersdata> connection lost!"
-                time.sleep(.1)
+                time.sleep(1)
             else:
                 try:
                     return OrdersData.json()["Data"]
