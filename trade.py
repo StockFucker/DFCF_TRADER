@@ -182,35 +182,9 @@ class DFCF_Trader(object):
         
 #资产列表
     def getassets(self):
-        while True:
-            try:
-                Assets=self.s.post('https://jy.xzsec.com/Com/GetAssets'+self.url_suffix,
+        Assets=self.s.post('https://jy.xzsec.com/Com/GetAssets'+self.url_suffix,
                                    {'moneyType':'RMB'},timeout=5)
-            except Exception as e:
-                print str(e)
-                print "\n<getassets> Connection Lost, Re-Connecting..."
-                time.sleep(.1)
-            else:
-                try:
-                    return Assets.json()["Data"][0]                    
-                except ValueError:
-                    self.login_flag=False
-                    while self.login_flag is False:
-                        time.sleep(.5)
-                except TypeError: #Status:-1; Message:'服务器异常'
-                    print u"\n <getassets> 服务器异常!"
-                    time.sleep(2)
-                except Exception as e:
-                    log.error(e)
-                    time.sleep(2)
-                    
-                '''                
-                if Assets.json()["Status"]!=0: #Status:-2 ; Message:"会话已超时，请重新登录!"
-                    self.login_flag=False
-                    time.sleep(2)
-                    continue
-                return Assets.json()["Data"][0]
-                '''
+        return Assets.json()["Data"][0]                    
 
 #持仓列表
     def getstocklist(self):
