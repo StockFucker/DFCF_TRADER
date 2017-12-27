@@ -186,9 +186,10 @@ class DFCF_Trader(object):
             try:
                 Assets=self.s.post('https://jy.xzsec.com/Com/GetAssets'+self.url_suffix,
                                    {'moneyType':'RMB'},timeout=5)
-            except Exception:
+            except Exception as e:
+                print e,e.strerror
                 print "\n<getassets> Connection Lost, Re-Connecting..."
-                time.sleep(1)
+                time.sleep(.1)
             else:
                 try:
                     return Assets.json()["Data"][0]                    
@@ -219,7 +220,7 @@ class DFCF_Trader(object):
                                       {'qqhs':'1000','dwc':''});
             except Exception:
                 print "\n <getstocklist> connection lost!"
-                time.sleep(1)
+                time.sleep(.1)
             else:
                 try:
                     return StockList.json()["Data"]                    
@@ -248,7 +249,7 @@ class DFCF_Trader(object):
                 OrdersData=self.s.post('https://jy.xzsec.com/Search/GetOrdersData'+self.url_suffix,{'qqhs':'20','dwc':''});
             except Exception:
                 print "\n <getordersdata> connection lost!"
-                time.sleep(1)
+                time.sleep(.1)
             else:
                 try:
                     return OrdersData.json()["Data"]
