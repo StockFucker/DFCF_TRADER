@@ -11,7 +11,7 @@ from trade import *
 from flask import *
 
 app = Flask(__name__)
-trader=DFCF_Trader()
+trader=DFCF_Trader(config="./config/dfcf.json2")
 
 @app.route("/login")
 def relogin():
@@ -83,7 +83,7 @@ def login():
 
 
 if __name__ == '__main__':
-    login(config="./config/dfcf.json2")
+    login()
     app.run(port=6000)
 
     

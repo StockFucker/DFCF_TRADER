@@ -17,14 +17,14 @@ import cStringIO
 import matplotlib.pyplot as plt
 
 class DFCF_Trader(object):
-    def __init__(self):
+    def __init__(self,config="./config/dfcf.json"):
         self.s = requests.session()
         self.verify_code=VerifyCode()
         # self.queue=Queue.Queue(maxsize=15)
         
         self.tradetime_flag=False
         self.login_flag=False
-        self.login()
+        self.login(config=config)
         # self.kill=0
 
         # for i in xrange(5):
