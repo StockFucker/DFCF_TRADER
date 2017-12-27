@@ -14,7 +14,7 @@ from voice import playsound
 import random,string
 from PIL import Image
 import cStringIO
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 class DFCF_Trader(object):
     def __init__(self,config="./config/dfcf.json"):
@@ -187,7 +187,7 @@ class DFCF_Trader(object):
                 Assets=self.s.post('https://jy.xzsec.com/Com/GetAssets'+self.url_suffix,
                                    {'moneyType':'RMB'},timeout=5)
             except Exception as e:
-                print e,e.strerror
+                print str(e)
                 print "\n<getassets> Connection Lost, Re-Connecting..."
                 time.sleep(.1)
             else:

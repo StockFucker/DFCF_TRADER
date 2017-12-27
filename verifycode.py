@@ -12,7 +12,7 @@ except ImportError:
 
 #将图片放到内存中
 import cStringIO,  requests, random , string
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sys
 import urllib, urllib2, sys
 import base64
