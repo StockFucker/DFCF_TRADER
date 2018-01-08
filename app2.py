@@ -26,8 +26,9 @@ def buy():
     stockname = ''
     price = request.args.get('price', '')
     amount = request.args.get('amount', '')
+    print amount
     tradetype = "B"
-    if amount is None:
+    if amount is None or amount == "" or int(amount) <= 0:
         trader.deal(stockcode,stockname,price,1.0,tradetype)
     else:
         trader.deal_with(stockcode,stockname,price,amount,tradetype)
