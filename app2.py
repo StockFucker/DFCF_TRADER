@@ -32,6 +32,7 @@ def buy():
         trader.deal(stockcode,stockname,price,1.0,tradetype)
     else:
         trader.deal_with(stockcode,stockname,price,amount,tradetype)
+    return ""
 
 @app.route("/sell")
 def sell():
@@ -39,8 +40,13 @@ def sell():
     stockname = ''
     price = request.args.get('price', '')
     amount = request.args.get('amount', '')
+    print amount
     tradetype = "S"
-    trader.deal_with(stockcode,stockname,price,amount,tradetype)
+    if amount is None or amount == "" or int(amount) <= 0:
+        trader.deal(stockcode,stockname,price,1.0,tradetype)
+    else:
+        trader.deal_with(stockcode,stockname,price,amount,tradetype)
+    return ""
 
 @app.route("/asset")
 def asset():
