@@ -68,6 +68,7 @@ class VerifyCode(object):
             print(e)
             print(img_str)
             line = sys.stdin.readline() # 一次只读一行
+            print(line)
             return line
         
 
