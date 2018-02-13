@@ -65,7 +65,10 @@ class VerifyCode(object):
             vcode = content["result"]["code"]
             return vcode
         except Exception, e:
-            raise e
+            print(e)
+            print(img_str)
+            line = sys.stdin.readline() # 一次只读一行
+            return line
         
 
 # def download_images():
