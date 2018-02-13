@@ -65,22 +65,7 @@ class VerifyCode(object):
             vcode = content["result"]["code"]
             return vcode
         except Exception, e:
-            print e
-            host = 'http://op.juhe.cn'
-            path = '/vercode/index'
-            method = 'GET'
-            querys = 'codeType=4004&key=5d0d9d396af4b72b71d251b5cf700319&base64Str=' + img_str
-            bodys = {}
-            url = host + path + '?' + querys
-            print(url)
-            # request = urllib2.Get(url)
-            # request.add_header('Authorization', 'APPCODE ' + appcode)
-            # //根据API的要求，定义相对应的Content-Type
-            # request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-            response = urllib2.urlopen(url)
-            content = json.loads(response.read())
-            vcode = content["result"]
-            return vcode
+            raise e
         
 
 # def download_images():
