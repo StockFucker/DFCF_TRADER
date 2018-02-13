@@ -45,25 +45,45 @@ class VerifyCode(object):
         #print im.format, im.size, im.mode
         #im.show()
         '''
+        try:
+            host = 'http://jisuyzmsb.market.alicloudapi.com'
+            path = '/captcha/recognize'
+            method = 'POST'
+            appcode = '6349909e80664219a6b6a3d580c05687'
+            querys = 'type=n4'
+            bodys = {}
+            url = host + path + '?' + querys
 
-        host = 'http://jisuyzmsb.market.alicloudapi.com'
-        path = '/captcha/recognize'
-        method = 'POST'
-        appcode = '6349909e80664219a6b6a3d580c05687'
-        querys = 'type=n4'
-        bodys = {}
-        url = host + path + '?' + querys
+            bodys['pic'] = img_str
+            post_data = urllib.urlencode(bodys)
+            request = urllib2.Request(url, post_data)
+            request.add_header('Authorization', 'APPCODE ' + appcode)
+            # //根据API的要求，定义相对应的Content-Type
+            request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+            response = urllib2.urlopen(request)
+            content = json.loads(response.read())
+            vcode = content["result"]["code"]
+            return vcode
+        except Exception, e:
+            print e
+            host = 'http://op.juhe.cn'
+            path = '/captcha/recognize'
+            method = 'GET'
+            querys = 'codeType=4004&key=5d0d9d396af4b72b71d251b5cf700319&base64Str=' + img_str
+            bodys = {}
+            url = host + path + '?' + querys
 
-        bodys['pic'] = img_str
-        post_data = urllib.urlencode(bodys)
-        request = urllib2.Request(url, post_data)
-        request.add_header('Authorization', 'APPCODE ' + appcode)
-        # //根据API的要求，定义相对应的Content-Type
-        request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-        response = urllib2.urlopen(request)
-        content = json.loads(response.read())
-        vcode = content["result"]["code"]
-        return vcode
+            bodys['pic'] = img_str
+            post_data = urllib.urlencode(bodys)
+            request = urllib2.Request(url, post_data)
+            # request.add_header('Authorization', 'APPCODE ' + appcode)
+            # //根据API的要求，定义相对应的Content-Type
+            # request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+            response = urllib2.urlopen(request)
+            content = json.loads(response.read())
+            vcode = content["result"]
+            return vcode
+        
 
 # def download_images():
 #     randNum="%.16f" % float(random.random())
