@@ -67,8 +67,7 @@ class VerifyCode(object):
         except Exception, e:
             print(e)
             print(img_str)
-            line = sys.stdin.readline() # 一次只读一行
-            print(line)
+            line = sys.stdin.readline().strip('\n')   # 一次只读一行
             return line
         
 
