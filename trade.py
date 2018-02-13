@@ -59,7 +59,8 @@ class DFCF_Trader(object):
             randNum="%.16f" % float(random.random())
             url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
             vcode=self.verify_code.get_verify_code(url_yzm)
-            login_params.update({'identifyCode':vcode,'randNumber':randNum})            
+            login_params.update({'identifyCode':vcode,'randNumber':randNum})
+            print(login_params)
             res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
             
             if int(res.json()["Status"]) <> 0:
@@ -135,7 +136,8 @@ class DFCF_Trader(object):
         vcode=self.verify_code.get_verify_code(url_yzm)
         login_params.update({'identifyCode':vcode,'randNumber':randNum})            
         res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
-        
+        print(login_params)
+
         if int(res.json()["Status"]) <> 0:
             return
         
