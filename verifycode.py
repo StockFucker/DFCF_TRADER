@@ -2,7 +2,6 @@
 #-*- coding:utf-8 -*-
 
 try:
-    import pytesseract
     from PIL import Image
 except ImportError:
     print '模块导入错误,请使用pip安装,pytesseract依赖以下库：'
