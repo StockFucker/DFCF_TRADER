@@ -8,10 +8,10 @@ import requests
 import time
 
 def go():
-    LOGIN_URL = "http://localhost:5000/asset"
-    data=requests.get(LOGIN_URL)
-    # LOGIN_URL = "http://localhost:7000/asset"
+    # LOGIN_URL = "http://localhost:5000/asset"
     # data=requests.get(LOGIN_URL)
+    LOGIN_URL = "http://localhost:7000/asset"
+    data=requests.get(LOGIN_URL)
 
 if __name__ == '__main__':
     while True:
