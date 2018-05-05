@@ -56,6 +56,17 @@ def asset():
 def holdings():
     return json.dumps(trader.getstocklist())
 
+@app.route("/hisorder")
+def hisorder():
+    st = request.args.get('begin', '')
+    et = request.args.get('end', '')
+    return json.dumps(trader.gethisorder(st,et))
+
+@app.route("/hisdeal")
+def hisdeal():
+    st = request.args.get('begin', '')
+    et = request.args.get('end', '')
+    return json.dumps(trader.gethisdealdata(st,et))
 
 def login():
     stdi, stdo, stde = sys.stdin, sys.stdout, sys.stderr  # 获取标准输入、标准输出和标准错误输出

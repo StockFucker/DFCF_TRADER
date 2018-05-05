@@ -310,6 +310,26 @@ class DFCF_Trader(object):
                     log.error(e)
                     time.sleep(2) 
        
+#历史成交
+    def gethisorder(self,st='2017-02-01',et='2017-02-12'):
+        while True:
+            try:
+                HistDealList=self.s.post('https://jy.xzsec.com/Search/GetHisOrdersData'+self.url_suffix, \
+                                      {'st':st,'et':et,'qqhs':'1000','dwc':''});
+            except Exception:
+                print "\n <getstocklist> connection lost!"
+                time.sleep(1)
+            else:
+                try:
+                    return HistDealList.json()["Data"]                    
+                except ValueError:
+                    self.login_flag=False
+                    while self.login_flag is False:
+                        time.sleep(.5)
+                except Exception as e:
+                    log.error(e)
+                    time.sleep(2) 
+
 #撤单列表
     def getrevokelist(self):
         try:
