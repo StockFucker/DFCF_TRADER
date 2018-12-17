@@ -6,7 +6,7 @@ import sys
 import requests
 import json,re
 import threading,Queue
-import time,log
+import time,log,datetime
 from verifycode import VerifyCode
 from voice import playsound
 #from winsound import Beep
@@ -21,7 +21,7 @@ class DFCF_Trader(object):
         self.s = requests.session()
         self.verify_code=VerifyCode()
         # self.queue=Queue.Queue(maxsize=15)
-        
+
         self.tradetime_flag=False
         self.login_flag=False
         self.login(config=config)
@@ -34,13 +34,13 @@ class DFCF_Trader(object):
         # self.thread_login=threading.Thread(target=self.login,name='Thread-login')
         # self.thread_login.setDaemon(True)
         # self.thread_login.start()
- 
+
 
 #登陆
     def login(self,config="./config/dfcf.json"):
         #log.info('%s Active...' % threading.current_thread().name)
         self.__authorization(config)
-            
+
     def __authorization(self,config="./config/dfcf.json"):
         while self.login_flag==False:
             headers = {'Host': 'jy.xzsec.com',
@@ -50,11 +50,11 @@ class DFCF_Trader(object):
                        'Accept-Encoding':'gzip, deflate, br',
                        'Referer':'https://jy.xzsec.com/Trade/Buy',
                        'Connection':'keep-alive',
-                       'Upgrade-Insecure-Requests':'1'         
-                       } 
+                       'Upgrade-Insecure-Requests':'1'
+                       }
             self.s.headers.update(headers)
             login_params=json.load(file(config))
-    
+
             #获取验证码：
             randNum="%.16f" % float(random.random())
             url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
@@ -62,22 +62,22 @@ class DFCF_Trader(object):
             login_params.update({'identifyCode':vcode,'randNumber':randNum})
             print(login_params)
             res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
-            
+
             if int(res.json()["Status"]) <> 0:
                 log.info('Login Failed')
                 playsound(mac_say='login failed',win_sound='./wav/login failed.wav',frequency=450, duration=150)
                 continue
- 
+
             if self.login_flag==True: return
-            
+
             #获取 validatekey：
             get_validatekey=self.s.get('https://jy.xzsec.com/Trade/Buy')
             if re.search(r'em_validatekey.*?>',get_validatekey.text).group():
                 self.validatekey= re.search(r'em_validatekey.*?>',get_validatekey.text).group()[37:73]
                 #print "\nvalidatekey: %s" % self.validatekey
                 self.url_suffix='?validatekey='+self.validatekey
-                
-                self.login_flag=True        
+
+                self.login_flag=True
                 self.login_message=res.json()
                 return self.login_message
             else:
@@ -107,7 +107,7 @@ class DFCF_Trader(object):
                         log.info('Login Failed')
                         #Beep(450,150)
                         playsound(mac_say='login failed',win_sound='./wav/login failed.wav',frequency=450, duration=150)
-                        time.sleep(3)                    
+                        time.sleep(3)
                 except Exception:
                     #winsound.PlaySound('./wav/connection lost.wav',winsound.SND_ASYNC)
                     #os.system("say connection lost")
@@ -116,7 +116,7 @@ class DFCF_Trader(object):
                     time.sleep(1)
                     log.info("Login connection lost !!!")
             time.sleep(.5)
-            
+
     def __authorization_a(self,config="./config/dfcf.json"):
         headers = {'Host': 'jy.xzsec.com',
                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:50.0) Gecko/20100101 Firefox/50.0',
@@ -125,8 +125,8 @@ class DFCF_Trader(object):
                    'Accept-Encoding':'gzip, deflate, br',
                    'Referer':'https://jy.xzsec.com/Trade/Buy',
                    'Connection':'keep-alive',
-                   'Upgrade-Insecure-Requests':'1'         
-                   } 
+                   'Upgrade-Insecure-Requests':'1'
+                   }
         self.s.headers.update(headers)
         login_params=json.load(file(config))
 
@@ -134,21 +134,21 @@ class DFCF_Trader(object):
         randNum="%.16f" % float(random.random())
         url_yzm="https://jy.xzsec.com/Login/YZM?randNum=" + randNum
         vcode=self.verify_code.get_verify_code(url_yzm)
-        login_params.update({'identifyCode':vcode,'randNumber':randNum})            
+        login_params.update({'identifyCode':vcode,'randNumber':randNum})
         res=self.s.post('https://jy.xzsec.com/Login/Authentication',login_params)
         print(login_params)
 
         if int(res.json()["Status"]) <> 0:
             return
-        
+
         #获取 validatekey：
         get_validatekey=self.s.get('https://jy.xzsec.com/Trade/Buy')
         if re.search(r'em_validatekey.*?>',get_validatekey.text).group():
             self.validatekey= re.search(r'em_validatekey.*?>',get_validatekey.text).group()[37:73]
             #print "\nvalidatekey: %s" % self.validatekey
             self.url_suffix='?validatekey='+self.validatekey
-            
-            self.login_flag=True        
+
+            self.login_flag=True
             self.login_message=res.json()
             return self.login_message
         else:
@@ -158,8 +158,8 @@ class DFCF_Trader(object):
         for i in xrange(len(res.json()["Data"])):
             for key  in res.json()["Data"][i]:
                     self.login_message += key +" %s" % res.json()["Data"][i][key]
-        '''        
-        
+        '''
+
 
 # #生成验证码队列
 #     def generate_vcode_queue(self):
@@ -171,7 +171,7 @@ class DFCF_Trader(object):
 #             vcode=""; digits=list(string.digits)
 #             while True:
 #                 vcode,im=self.verify_code.get_verify_code(url_yzm)
-#                 if len(vcode) == 4:                        
+#                 if len(vcode) == 4:
 #                     for k in xrange(4):
 #                         if vcode[k] not in digits: #[str(x) for x in xrange(10)]:
 #                             break
@@ -181,7 +181,7 @@ class DFCF_Trader(object):
 #             self.queue.put([randNum, vcode],block=True)
 #             #time.sleep(.5)
 
-        
+
 #资产列表
     def getassets(self):
         while True:
@@ -193,7 +193,7 @@ class DFCF_Trader(object):
                 time.sleep(.1)
             else:
                 try:
-                    return Assets.json()["Data"][0]                    
+                    return Assets.json()["Data"][0]
                 except ValueError:
                     self.login_flag=False
                     while self.login_flag is False:
@@ -204,8 +204,8 @@ class DFCF_Trader(object):
                 except Exception as e:
                     log.error(e)
                     time.sleep(2)
-                    
-                '''                
+
+                '''
                 if Assets.json()["Status"]!=0: #Status:-2 ; Message:"会话已超时，请重新登录!"
                     self.login_flag=False
                     time.sleep(2)
@@ -224,16 +224,16 @@ class DFCF_Trader(object):
                 time.sleep(1)
             else:
                 try:
-                    return StockList.json()["Data"]                    
+                    return StockList.json()["Data"]
                 except ValueError:
                     self.login_flag=False
                     while self.login_flag is False:
                         time.sleep(.5)
                 except Exception as e:
                     log.error(e)
-                    time.sleep(2) 
-                     
-            '''    
+                    time.sleep(2)
+
+            '''
             self.stocklist_message=""
             StockList=self.s.post('https://jy.xzsec.com/Search/GetStockList',{'qqhs':'1000','dwc':''});
             if len(StockList.json()["Data"])==0:
@@ -261,7 +261,7 @@ class DFCF_Trader(object):
                 except Exception as e:
                     log.error(e)
                     time.sleep(2)
-        '''            
+        '''
         self.ordersdata_message=""
         OrdersData=self.s.post('https://jy.xzsec.com/Search/GetOrdersData'+self.url_suffix,{'qqhs':'20','dwc':''});
         if len(OrdersData.json()["Data"])==0:
@@ -281,14 +281,14 @@ class DFCF_Trader(object):
                 time.sleep(1)
             else:
                 try:
-                    return TodayDealData.json()["Data"]                    
+                    return TodayDealData.json()["Data"]
                 except ValueError:
                     self.login_flag=False
                     while self.login_flag is False:
-                        time.sleep(.5)         
+                        time.sleep(.5)
                 except Exception as e:
                     log.error(e)
-                    time.sleep(2)         
+                    time.sleep(2)
 
 #历史成交
     def gethisdealdata(self,st='2017-02-01',et='2017-02-12'):
@@ -301,15 +301,15 @@ class DFCF_Trader(object):
                 time.sleep(1)
             else:
                 try:
-                    return HistDealList.json()["Data"]                    
+                    return HistDealList.json()["Data"]
                 except ValueError:
                     self.login_flag=False
                     while self.login_flag is False:
                         time.sleep(.5)
                 except Exception as e:
                     log.error(e)
-                    time.sleep(2) 
-       
+                    time.sleep(2)
+
 #历史成交
     def gethisorder(self,st='2017-02-01',et='2017-02-12'):
         while True:
@@ -321,14 +321,14 @@ class DFCF_Trader(object):
                 time.sleep(1)
             else:
                 try:
-                    return HistDealList.json()["Data"]                    
+                    return HistDealList.json()["Data"]
                 except ValueError:
                     self.login_flag=False
                     while self.login_flag is False:
                         time.sleep(.5)
                 except Exception as e:
                     log.error(e)
-                    time.sleep(2) 
+                    time.sleep(2)
 
 #撤单列表
     def getrevokelist(self):
@@ -339,14 +339,14 @@ class DFCF_Trader(object):
         list=[]
         if len(RevokeList.json()["Data"])==0:
             print "Revoke List: %2d" % (0)
-        else:           
+        else:
             for i in xrange(len(RevokeList.json()["Data"])):
                 list.append(RevokeList.json()["Data"][i]["Wtrq"]+"_"+ \
-                            RevokeList.json()["Data"][i]["Wtbh"])                    
+                            RevokeList.json()["Data"][i]["Wtbh"])
         return list
 
 #撤单
-    def revoke(self,wtbh):    
+    def revoke(self,wtbh):
         RevokeOrders=self.s.post('https://jy.xzsec.com/Trade/RevokeOrders'+self.url_suffix,{'revokes':wtbh})
         return RevokeOrders
 
@@ -374,53 +374,54 @@ class DFCF_Trader(object):
                 print e,"\n<GetKyzjAndKml> Connection Lost, Re-Connecting..."
                 time.sleep(1)
                 continue
-        
+
             try:
                 SubmitTrade=self.s.post('https://jy.xzsec.com/Trade/SubmitTrade'+self.url_suffix, \
                                    {'stockCode':stockcode,'price':price, \
                                    'amount':Kmml, \
                                    'tradeType':tradetype} #,'stockName':stockname
-                                   )       
+                                   )
             except Exception as e:
                 print e,"\n<SubmitTrade> Connection Lost, Re-Connecting..."
                 time.sleep(1)
             else:
                 try:
                     #print GetKyzjAndKml.json()
-                    #print SubmitTrade.json()    
+                    #print SubmitTrade.json()
                     Wtbh=SubmitTrade.json()["Data"][0]["Wtbh"]
                     return Wtbh
-                except ValueError: 
+                except ValueError:
                     self.login_flag=False
                     while self.login_flag is False:
                         time.sleep(.5)
                     continue
                 except (IndexError,TypeError):
                     log.error(SubmitTrade.json()["Message"]) #Status:-1
-                    break               
+                    break
                 except Exception as e:
                     print e,'unknow error!'
                     time.sleep(2)
-                
+
 
     #下单
     def deal_with(self,stockcode,stockname,price,amount,tradetype):
         try:
+            print('deal_with: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
             SubmitTrade=self.s.post('https://jy.xzsec.com/Trade/SubmitTrade'+self.url_suffix, \
                                {'stockCode':stockcode,'price':price, \
                                'amount':amount, \
                                'tradeType':tradetype} #,'stockName':stockname
-                               )       
+                               )
         except Exception as e:
             print e,"\n<SubmitTrade> Connection Lost, Re-Connecting..."
             time.sleep(1)
         else:
             try:
                 #print GetKyzjAndKml.json()
-                #print SubmitTrade.json()    
+                #print SubmitTrade.json()
                 Wtbh=SubmitTrade.json()["Data"][0]["Wtbh"]
                 return Wtbh
-            except ValueError: 
+            except ValueError:
                 self.login_flag=False
                 while self.login_flag is False:
                     time.sleep(.5)
@@ -445,10 +446,10 @@ class DFCF_Trader(object):
                 print e;time.sleep(1)
                 continue
         return eval(re.search(r'{.*}',quote.text).group())
-        
-        
+
+
 if __name__=="__main__":
-    import pandas as pd    
+    import pandas as pd
 
     stdi, stdo, stde = sys.stdin, sys.stdout, sys.stderr  # 获取标准输入、标准输出和标准错误输出
     reload(sys)
@@ -456,7 +457,7 @@ if __name__=="__main__":
     sys.setdefaultencoding('utf8')
 
     test=DFCF_Trader()
-    
+
     while True:
         if test.login_flag==True:
             print "\nActive Threads: [%02d] \n" % threading.active_count()
@@ -471,30 +472,30 @@ if __name__=="__main__":
                                    总资产:%(Zzc)s\t可用资金:%(Kyzj)s\t可取资金:%(Kqzj)s\t \
                                    冻结资金:%(Djzj)s\t    资金余额:%(Zjye)s   总市值: %(Zxsz)s " % assets)
                 sys.stdout.flush()
-            df=pd.DataFrame(test.login_message['Data'])            
+            df=pd.DataFrame(test.login_message['Data'])
             df=df.ix[:,[0,5,1,6]]
-            df.columns = ['Date', 'Time','Account','Name']       
+            df.columns = ['Date', 'Time','Account','Name']
             #print user.login_message['Data']
             #sys.stdout.write( "\r %(khmc)s <%(Syspm1)s> Logged at: %(Date)s-%(Time)s "  \
             #                  % user.login_message['Data'][0])
 
             break
         time.sleep(1)
-    
+
 '''     import time,sys
     for i in xrange(10):
         user.getstocklist()
-        
+
         sys.stdout.write("\r [%r] %200s" % (time.ctime(), user.stocklist_message))
         #sys.stdout.write( "\rFile transfer progress :[%3d] percent complete!" % i )
-        #sys.stdout.write ("\rProcessing: [%2d%%]" % i)      
+        #sys.stdout.write ("\rProcessing: [%2d%%]" % i)
         sys.stdout.flush()
         time.sleep(.1)
 
 
     user.getrevokelist()
     print user.revokelist_message
-    print "-----------"    
+    print "-----------"
     user.getordersdata()
     print user.ordersdata_message
     print "***********"
@@ -503,9 +504,9 @@ if __name__=="__main__":
 
     user.deal('600692','亚通股份','18.6','S')
     #user.revoke('20170116_132537')
-'''           
+'''
 #----华丽的分割线 ：)  ---------------
-'''        
+'''
 s = requests.session()
 headers = {'Host': 'jy.xzsec.com',
            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:50.0) Gecko/20100101 Firefox/50.0',
@@ -514,9 +515,9 @@ headers = {'Host': 'jy.xzsec.com',
            'Accept-Encoding':'gzip, deflate, br',
            'Referer':'https://jy.xzsec.com/Trade/Buy',
            'Connection':'keep-alive',
-           'Upgrade-Insecure-Requests':'1'         
-           }       
-s.headers.update(headers)           
+           'Upgrade-Insecure-Requests':'1'
+           }
+s.headers.update(headers)
 res=s.post('https://jy.xzsec.com//Login/Authentication',json.load(file("./config/dfcf.json")));
 r=s.get('https://jy.xzsec.com/Search/Position');
 print r.url
@@ -548,8 +549,8 @@ if len(GetOrdersData.json()["Data"])==0:
 else:
     print len(GetOrdersData.json()["Data"])
     print GetOrdersData.json()["Data"][0]["Wtsj"]
-    
-  
+
+
 GetKyzjAndKml=s.post('https://jy.xzsec.com/Trade/GetKyzjAndKml', {'stockCode':'601666','price':'5.01','tradeType':'B','stockName':'平煤股份'});
 print GetKyzjAndKml.json()["Data"]["Kmml"]
 Kmml=GetKyzjAndKml.json()["Data"]["Kmml"]
@@ -558,7 +559,7 @@ print Kmml, type(Kmml)
 SubmitTrade=s.post('https://jy.xzsec.com/Trade/SubmitTrade', \
                    {'stockCode':'601666','price':'5.01','amount':'100','tradeType':'B','stockName':'平煤股份'}
                    )
-                  
+
 
 GetRevokeList=s.post('https://jy.xzsec.com/Trade/GetRevokeList')
 if len(GetRevokeList.json()["Data"])==0:
@@ -578,7 +579,7 @@ else:
     print GetRevokeList.json()["Data"][0]["Gddm"] #股东代码
     print GetRevokeList.json()["Data"][0]["Market"]
     print GetRevokeList.json()["Data"][0]["Wtsj"] #委托时间
-    print GetRevokeList.json()["Data"][0]["Dwc"] 
+    print GetRevokeList.json()["Data"][0]["Dwc"]
     print GetRevokeList.json()["Data"][0]["Cjje"]
     print GetRevokeList.json()["Data"][0]["Wtrq"]
     print GetRevokeList.json()["Data"][0]["Khdm"] #客户代码
@@ -587,17 +588,17 @@ else:
     print GetRevokeList.json()["Data"][0]["Hb"]
     print GetRevokeList.json()["Data"][0]["Jgbm"]
     print GetRevokeList.json()["Data"][0]["Htxh"]
-    print GetRevokeList.json()["Data"][0]["Bpsj"] 
-    print GetRevokeList.json()["Data"][0]["Cpbm"] 
+    print GetRevokeList.json()["Data"][0]["Bpsj"]
+    print GetRevokeList.json()["Data"][0]["Cpbm"]
     print GetRevokeList.json()["Data"][0]["Cpmc"]
     print GetRevokeList.json()["Data"][0]["Djje"]
-    print GetRevokeList.json()["Data"][0]["Jyxw"] 
-    print GetRevokeList.json()["Data"][0]["Cdbs"] 
+    print GetRevokeList.json()["Data"][0]["Jyxw"]
+    print GetRevokeList.json()["Data"][0]["Cdbs"]
     print GetRevokeList.json()["Data"][0]["Czrq"] #操作日期
     print GetRevokeList.json()["Data"][0]["Yjlx"]
     print GetRevokeList.json()["Data"][0]["Wtqd"]
     print GetRevokeList.json()["Data"][0]["Bzxx"]
-    print GetRevokeList.json()["Data"][0]["Mmbz"] 
+    print GetRevokeList.json()["Data"][0]["Mmbz"]
 
 RevokeOrders=s.post('https://jy.xzsec.com/Trade/RevokeOrders',{'revokes':'20170110_209948'})
 print RevokeOrders.json()["20170110"]

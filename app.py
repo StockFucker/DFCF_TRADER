@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os  
+import os
 import pandas as pd
 import time
 import json
-
+import datetime
 from trade import *
 from flask import *
 
@@ -22,11 +22,11 @@ def relogin():
 
 @app.route("/buy")
 def buy():
+    print('buy: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') )
     stockcode = request.args.get('stockcode', '')
     stockname = ''
     price = request.args.get('price', '')
     amount = request.args.get('amount', '')
-    print amount
     tradetype = "B"
     if amount is None or amount == "" or int(amount) <= 0:
         trader.deal(stockcode,stockname,price,1.0,tradetype)
@@ -36,11 +36,11 @@ def buy():
 
 @app.route("/sell")
 def sell():
+    print('sell: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') )
     stockcode = request.args.get('stockcode', '')
     stockname = ''
     price = request.args.get('price', '')
     amount = request.args.get('amount', '')
-    print amount
     tradetype = "S"
     if amount is None or amount == "" or int(amount) <= 0:
         trader.deal(stockcode,stockname,price,1.0,tradetype)
@@ -50,7 +50,7 @@ def sell():
 
 @app.route("/asset")
 def asset():
-    return trader.getassets()["Kyzj"]
+    return trader.getassets()
 
 @app.route("/holdings")
 def holdings():
@@ -88,9 +88,9 @@ def login():
                                    总资产:%(Zzc)s\t可用资金:%(Kyzj)s\t可取资金:%(Kqzj)s\t \
                                    冻结资金:%(Djzj)s\t    资金余额:%(Zjye)s   总市值: %(Zxsz)s " % assets)
                 sys.stdout.flush()
-            df=pd.DataFrame(trader.login_message['Data'])            
+            df=pd.DataFrame(trader.login_message['Data'])
             df=df.ix[:,[0,5,1,6]]
-            df.columns = ['Date', 'Time','Account','Name']       
+            df.columns = ['Date', 'Time','Account','Name']
             #print user.login_message['Data']
             #sys.stdout.write( "\r %(khmc)s <%(Syspm1)s> Logged at: %(Date)s-%(Time)s "  \
             #                  % user.login_message['Data'][0])
@@ -102,4 +102,3 @@ def login():
 if __name__ == '__main__':
     login()
     app.run()
-    

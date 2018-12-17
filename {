@@ -1,0 +1,22 @@
+{
+    "iExpireTime": 0, 
+    "iMsgId": 0, 
+    "iMsgType": 0, 
+    "iSendTime": 0, 
+    "sContents": "asffdafd", 
+    "sPictureUrl": "http://", 
+    "sTitle": "fdsfaf", 
+    "stJump": {
+        "stJump": {
+            "isjump": 0, 
+            "isweb": 0, 
+            "url": "http://www.baidu.com"
+        }, 
+        "stValue": {
+            "iType": 803, 
+            "sDesc": "", 
+            "sReserve": "{\"type\":\"10\",\"productId\":\"1217608301_000343\"}", 
+            "sTitle": ""
+        }
+    }
+}
