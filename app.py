@@ -50,7 +50,7 @@ def sell():
 
 @app.route("/asset")
 def asset():
-    return trader.getassets()
+    return json.dumps(trader.getassets())
 
 @app.route("/holdings")
 def holdings():
