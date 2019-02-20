@@ -17,10 +17,16 @@ import urllib, urllib2, sys
 import base64
 import json
 
+# coding=utf-8
+import sys
+import requests
+from apig_sdk import signer
+
+
 class VerifyCode(object):
     def __init__(self):
         self.s = requests.session()
-        
+
     def get_verify_code(self,url_yzm):
         #url ="http://www.qqct.com.cn/console/captcha"
 
@@ -33,42 +39,59 @@ class VerifyCode(object):
                             #各元素为（left, upper, right, lower），坐标系统的原点（0, 0）是左上角。
         imgry = img.convert('L')
         #imgry.show()
-        threshold = 190  
-        table = []  
-        for i in range(256):  
-            if i < threshold:  
-                table.append(0)  
-            else:  
-                table.append(1) 
-        out = imgry.point(table,'1')        
+        threshold = 190
+        table = []
+        for i in range(256):
+            if i < threshold:
+                table.append(0)
+            else:
+                table.append(1)
+        out = imgry.point(table,'1')
         #print im.format, im.size, im.mode
         #im.show()
         '''
         try:
-            host = 'http://jisuyzmsb.market.alicloudapi.com'
-            path = '/captcha/recognize'
-            method = 'POST'
-            appcode = '6349909e80664219a6b6a3d580c05687'
-            querys = 'type=n4'
-            bodys = {}
-            url = host + path + '?' + querys
+            # host = 'http://jisuyzmsb.market.alicloudapi.com'
+            # path = '/captcha/recognize'
+            # method = 'POST'
+            # appcode = '6349909e80664219a6b6a3d580c05687'
+            # querys = 'type=n4'
+            # bodys = {}
+            # url = host + path + '?' + querys
+            #
+            # bodys['pic'] = img_str
+            # post_data = urllib.urlencode(bodys)
+            # request = urllib2.Request(url, post_data)
+            # request.add_header('Authorization', 'APPCODE ' + appcode)
+            # # //根据API的要求，定义相对应的Content-Type
+            # request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+            # response = urllib2.urlopen(request)
+            # content = json.loads(response.read())
+            # vcode = content["result"]["code"]
+            # return vcode
 
-            bodys['pic'] = img_str
-            post_data = urllib.urlencode(bodys)
-            request = urllib2.Request(url, post_data)
-            request.add_header('Authorization', 'APPCODE ' + appcode)
-            # //根据API的要求，定义相对应的Content-Type
-            request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-            response = urllib2.urlopen(request)
-            content = json.loads(response.read())
-            vcode = content["result"]["code"]
+            sig = signer.Signer()
+            sig.AppKey = "69a2b70f68e8457ab612083fa3dbccce"
+            sig.AppSecret = "04779878ab2042dfaa00f2ec06b9336c"
+
+            r = signer.HttpRequest()
+            r.scheme = "http"
+            r.host = "yscheckcode.apistore.huaweicloud.com"
+            r.method = "POST"
+            r.uri = "/checkCode/ys/"
+            r.query = {'typeId':'14','needMorePrecise':'0','convert_to_jpg':'0','img_base64':img_str}
+            r.headers = {"x-stage": "RELEASE"}
+            sig.Sign(r)
+            resp = requests.request(r.method, r.scheme + "://" + r.host + r.uri, headers=r.headers, data=r.body)
+            content = json.loads(resp.content)
+            vcode = content["showapi_res_body"]["Result"]
+            # img.save('img/'+ vcode + ".png")
             return vcode
         except Exception, e:
             print(e)
-            print(img_str)
             line = sys.stdin.readline().strip('\n')   # 一次只读一行
             return line
-        
+
 
 # def download_images():
 #     randNum="%.16f" % float(random.random())
