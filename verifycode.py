@@ -21,7 +21,7 @@ import json
 import sys
 import requests
 from apig_sdk import signer
-
+from fateadm_api import *
 
 class VerifyCode(object):
     def __init__(self):
@@ -34,42 +34,8 @@ class VerifyCode(object):
         buffer = cStringIO.StringIO()
         img.save(buffer, format="JPEG")
         img_str = base64.b64encode(buffer.getvalue())
-        '''
-        im_1=img.crop((10,0,85,35)) #crop() : 从图像中提取出某个矩形大小的图像。它接收一个四元素的元组作为参数，
-                            #各元素为（left, upper, right, lower），坐标系统的原点（0, 0）是左上角。
-        imgry = img.convert('L')
-        #imgry.show()
-        threshold = 190
-        table = []
-        for i in range(256):
-            if i < threshold:
-                table.append(0)
-            else:
-                table.append(1)
-        out = imgry.point(table,'1')
-        #print im.format, im.size, im.mode
-        #im.show()
-        '''
+        # img.save("log/img.png")
         try:
-            # host = 'http://jisuyzmsb.market.alicloudapi.com'
-            # path = '/captcha/recognize'
-            # method = 'POST'
-            # appcode = '6349909e80664219a6b6a3d580c05687'
-            # querys = 'type=n4'
-            # bodys = {}
-            # url = host + path + '?' + querys
-            #
-            # bodys['pic'] = img_str
-            # post_data = urllib.urlencode(bodys)
-            # request = urllib2.Request(url, post_data)
-            # request.add_header('Authorization', 'APPCODE ' + appcode)
-            # # //根据API的要求，定义相对应的Content-Type
-            # request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-            # response = urllib2.urlopen(request)
-            # content = json.loads(response.read())
-            # vcode = content["result"]["code"]
-            # return vcode
-
             sig = signer.Signer()
             sig.AppKey = "69a2b70f68e8457ab612083fa3dbccce"
             sig.AppSecret = "04779878ab2042dfaa00f2ec06b9336c"
@@ -85,12 +51,31 @@ class VerifyCode(object):
             resp = requests.request(r.method, r.scheme + "://" + r.host + r.uri, headers=r.headers, data=r.body)
             content = json.loads(resp.content)
             vcode = content["showapi_res_body"]["Result"]
-            # img.save('img/'+ vcode + ".png")
             return vcode
         except Exception, e:
-            print(e)
-            line = sys.stdin.readline().strip('\n')   # 一次只读一行
-            return line
+            return self.get_verify_code2(img_str)
+            # print(e)
+            # line = sys.stdin.readline().strip('\n')   # 一次只读一行
+            # return line
+
+    def get_verify_code2(self,img_str):
+        try:
+            pd_id          = "109900";
+            pd_key         = "2Pe+zgn0/PQ7+ahjIc7x76Gwiihgv07l";
+            pred_type      = "10400";
+            api            = FateadmApi(None, None, pd_id, pd_key);
+            rsp            = api.Predict( pred_type, img_str);
+            return rsp.pred_rsp.value
+        except Exception as e:
+            return self.get_verify_code3(img_str)
+
+    def get_verify_code3(self,img_str):
+        try:
+            rc = RClient('sgcy1991', 'a1991311', '123064', '62842c265d2849408a4bd84f15e22959')
+            result = rc.rk_create(img_str, 1040)
+            return result["Result"]
+        except Exception as e:
+            raise
 
 
 # def download_images():
