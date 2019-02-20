@@ -53,8 +53,8 @@ class VerifyCode(object):
             vcode = content["showapi_res_body"]["Result"]
             return vcode
         except Exception, e:
+            print(e)
             return self.get_verify_code2(img_str)
-            # print(e)
             # line = sys.stdin.readline().strip('\n')   # 一次只读一行
             # return line
 
@@ -67,6 +67,7 @@ class VerifyCode(object):
             rsp            = api.Predict( pred_type, img_str);
             return rsp.pred_rsp.value
         except Exception as e:
+            print(e)
             return self.get_verify_code3(img_str)
 
     def get_verify_code3(self,img_str):
@@ -75,7 +76,10 @@ class VerifyCode(object):
             result = rc.rk_create(img_str, 1040)
             return result["Result"]
         except Exception as e:
-            raise
+            print(e)
+            line = sys.stdin.readline().strip('\n')   # 一次只读一行
+            return line
+
 
 
 # def download_images():
