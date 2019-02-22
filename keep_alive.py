@@ -4,7 +4,7 @@
 
 import json
 
-import requests  
+import requests
 import time
 
 def go():

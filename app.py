@@ -50,6 +50,9 @@ def sell():
 
 @app.route("/asset")
 def asset():
+    time_str = datetime.datetime.now().strftime('%H:%M:%S')
+    if time_str > '18:00:00':
+        exit()
     return json.dumps(trader.getassets())
 
 @app.route("/holdings")
